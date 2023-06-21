@@ -30,16 +30,51 @@ class _ItemScreenState extends State<ItemScreen> {
         body: ListView.builder(
           itemCount: (items != null) ? items.length : 0,
           itemBuilder: (BuildContext context, int index){
-            return ListTile(
-              title: Text(items[index].name),
-              subtitle: Text('Cantidad: ${items[index].quantity} - Nota: ${items[index].note}'),
-              trailing: IconButton(
-                icon: const Icon(Icons.edit),
-                onPressed: (){
-                  showDialog(context: context, builder: (BuildContext context) => dialog.buildDialog(context, items[index], false));
+            return Dismissible(
+                key: Key(items[index].id.toString()),
+                onDismissed: (direction){
+                  String strName = items[index].name;
+                  helper!.deleteItem(items[index].id);
+                  setState(() {
+                    items.removeAt(index);
+                  });
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(content: Text("$strName deleted"),)
+                  );
                 },
-              ),
-              onTap: (){},
+                background: Container(
+                  color: Colors.red,
+                  child: Icon(Icons.delete),
+                ),
+                child: ListTile(
+                  title: Text(items[index].name),
+                  subtitle: Text('Cantidad: ${items[index].quantity} - Nota: ${items[index].note}'),
+                //   trailing: Row(
+                //   mainAxisSize: MainAxisSize.min,
+                //   children: [
+                //     IconButton(
+                //       icon: const Icon(Icons.edit),
+                //       onPressed: () {
+                //         showDialog(context: context, builder: (BuildContext context) => dialog.buildDialog(context, items[index], false));
+                //       },
+                //     ),
+                //     SizedBox(width: 8.0), // Espacio entre los botones
+                //     IconButton(
+                //       icon: const Icon(Icons.delete),
+                //       onPressed: () {
+                //         print('Delete' + items[index].id.toString());
+                //       },
+                //     ),
+                //   ],
+                // ),
+                  trailing: IconButton(
+                    icon: const Icon(Icons.edit),
+                    onPressed: (){
+                      showDialog(context: context, builder: (BuildContext context) => dialog.buildDialog(context, items[index], false));
+                    },
+                  ),
+                  onTap: (){},
+                )
             );
           },
         ),

@@ -42,33 +42,51 @@ class _ShowListState extends State<ShowList> {
   Widget build(BuildContext context) {
     showData();
     return Scaffold(
-            appBar: AppBar(
-              title: Text("My shopping list"),
-            ),
-            body: ListView.builder(itemCount: (shoppingList != null)? shoppingList.length:0, itemBuilder: (BuildContext context, int index){
-        return ListTile(
-          title: Text(shoppingList[index].name),
-          leading: CircleAvatar(
-            child: Text(shoppingList[index].priority.toString()),
-          ),
-          trailing: IconButton(
-            icon: Icon(Icons.edit),
-            onPressed: (){
-              //aqui llamo a la actualizacion
-              showDialog(
-                  context: context,
-                  builder: (BuildContext context) =>
-              dialog!.buildDialog(context, shoppingList[index], false));
-            },
-          ),
-          onTap: (){
-
-            Navigator.push(
-                context,
-                MaterialPageRoute(builder: (context) => ItemScreen(shoppingList:shoppingList[index]))
-            );
-          },
-        );
+        appBar: AppBar(
+          title: Text("My shopping list"),
+        ),
+        body: ListView.builder(
+            itemCount: (shoppingList != null)? shoppingList.length:0,
+            itemBuilder: (BuildContext context, int index){
+              return Dismissible(
+                  key: Key(shoppingList[index].id.toString()),
+                  onDismissed: (direction){
+                    String strName = shoppingList[index].name;
+                    helper.deleteList(shoppingList[index].id);
+                    setState(() {
+                      shoppingList.removeAt(index);
+                    });
+                    ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text("$strName list deleted"),)
+                    );
+                  },
+                  background: Container(
+                    color: Colors.red,
+                    child: Icon(Icons.delete),
+                  ),
+                  child: ListTile(
+                    title: Text(shoppingList[index].name),
+                    leading: CircleAvatar(
+                      child: Text(shoppingList[index].priority.toString()),
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.edit),
+                      onPressed: (){
+                        //aqui llamo a la actualizacion
+                        showDialog(
+                            context: context,
+                            builder: (BuildContext context) =>
+                        dialog!.buildDialog(context, shoppingList[index], false));
+                      },
+                    ),
+                    onTap: (){
+                      Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => ItemScreen(shoppingList:shoppingList[index]))
+                      );
+                    },
+                  )
+              );
       }),
       floatingActionButton: FloatingActionButton(
         onPressed: (){
