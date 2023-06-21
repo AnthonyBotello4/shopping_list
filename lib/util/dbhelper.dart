@@ -83,5 +83,27 @@ class DbHelper {
     });
   }
 
+  Future<void> deleteList(int id) async{
+
+    await db!.delete(
+        'items',
+        where: 'idList = ?',
+        whereArgs: [id]
+    );
+    await db!.delete(
+        'lists',
+        where: 'id = ?',
+        whereArgs: [id]
+    );
+  }
+
+  Future<void> deleteItem(int id) async{
+    await db!.delete(
+        'items',
+        where: 'id = ?',
+        whereArgs: [id]
+    );
+  }
+
 }
 
